@@ -1,73 +1,64 @@
 sap.ui.define([
-	'sap/ui/core/mvc/Controller',
+	'sap/ui/demo/bulletinboard/controller/BaseController',
+	'sap/ui/model/json/JSONModel',
 	'sap/ui/core/routing/History',
 	'sap/m/MessageBox'
-], function(Controller, History, MessageBox) {
+], function(BaseController, JSONModel, History, MessageBox) {
 	"use strict";
 
-	return Controller.extend("sap.ui.demo.bulletinboard.controller.PostCreate", {
+	return BaseController.extend("sap.ui.demo.bulletinboard.controller.PostCreate", {
 
-		getRouter: function() {
-			return sap.ui.core.UIComponent.getRouterFor(this);
+		onInit: function () {
+			this._bChangeFlag = false;
+			var oViewModel = new JSONModel({
+				busy: false,
+				busyDelay: 500
+			});
+			this.setModel(oViewModel, "postCreateView");
 		},
 
-		onInit: function() {
-			this.f = false;
-			this.getRouter().getRoute("postCreate").attachPatternMatched(this._onPostCreateMatched, this);
-			this.getView().byId("input_name").attachChange(function() {
-				this.onChange();
-			}.bind(this));
-			this.getView().byId("select_category").attachChange(function() {
-				this.onChange();
-			}.bind(this));
-			this.getView().byId("input_price").attachChange(function() {
-				this.onChange();
-			}.bind(this));
+		onChange: function(){
+			this._bChangeFlag = true;
 		},
 
-		_onPostCreateMatched: function() {
-
-		},
-
-		onNavBack: function() {
-			if (this.f) {
-				var that = this;
+		onNavBack: function () {
+			if(this._bChangeFlag){
 				MessageBox.show("Warning", {
 					icon: "WARNING",
 					title: "Are you sure to drop draft?",
 					actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
 					onClose: function(oEvent) {
 						if (oEvent === sap.m.MessageBox.Action.OK) {
-							var oHistory = History.getInstance();
-							var sPreviousHash = oHistory.getPreviousHash();
-							if (sPreviousHash !== undefined) {
-								// The history contains a previous entry
-								history.go(-1);
-							} else {
-								// Otherwise we go backwards with a forward history
-								var bReplace = true;
-								that.getRouter().navTo("worklist", {}, bReplace);
-							}
-						} else {
-							return;
+							this.myNavBack("worklist");
 						}
-					}
+					}.bind(this)
 				});
 			}
 		},
-		
-		onChange: function() {
-			this.f = true;
+
+		getUserInput: function(){
+			return {
+				Title: this.getView().byId("input_name").getValue(),
+				Price: this.getView().byId("input_price").getValue(),
+				Category: this.getView().byId("select_category").getSelectedItem().getText()
+			};
+		},
+
+		_validateUserInput: function(){
+			var mInput = this.getUserInput();
+			if(!mInput.Title.match(/^\w+$/) ||
+				!mInput.Price.match(/^[1-9]{1}\d*$/) ||
+				!mInput.Category){
+				return false;
+			}
+
+			mInput.PostID = jQuery.sap.uid();
+			return mInput;
 		},
 
 		onSavePost: function() {
-			var oInputName = this.getView().byId("input_name");
-			var oSelectCategory = this.getView().byId("select_category");
-			var oInputPrice = this.getView().byId("input_price");
-
-			if (!oInputName.getValue() || !oInputName.getValue().match(/^\w+$/) ||
-				!oInputPrice.getValue() || !oInputPrice.getValue().match(/^[1-9]{1}\d*$/) ||
-				!oSelectCategory.getSelectedItem()) {
+			var vRes = this._validateUserInput();
+			if (!vRes) {
 				MessageBox.show("Validation Error", {
 					icon: "ERROR",
 					title: "You have validation error",
@@ -76,39 +67,23 @@ sap.ui.define([
 				return;
 			}
 
-			var oCreateForm = this.getView().byId("form_post_create");
-			oCreateForm.setBusy(true);
-			oCreateForm.setBusyIndicatorDelay(500);
+			var oViewModel = this.getModel("postCreateView");
+			oViewModel.setProperty("/busy", true);
 
-			var oDataModel = this.getOwnerComponent().getModel();
-			var that = this;
-			oDataModel.create("/Posts", {
-				PostID: jQuery.sap.uid(),
-				Title: oInputName.getValue(),
-				Price: oInputPrice.getValue(),
-				Category: oSelectCategory.getSelectedItem().getText()
-			}, {
+			var oDataModel = this.getModel();
+			oDataModel.create("/Posts", vRes, {
 				success: function() {
-					oCreateForm.setBusy(false);
-					that.f = false;
+					oViewModel.setProperty("/busy", false);
+					this._bChangeFlag = false;
 					MessageBox.show("Success", {
 						icon: "SUCCESS",
 						title: "Post was created successfully",
 						actions: [sap.m.MessageBox.Action.OK],
 						onClose: function() {
-							var oHistory = History.getInstance();
-							var sPreviousHash = oHistory.getPreviousHash();
-							if (sPreviousHash !== undefined) {
-								// The history contains a previous entry
-								history.go(-1);
-							} else {
-								// Otherwise we go backwards with a forward history
-								var bReplace = true;
-								that.getRouter().navTo("worklist", {}, bReplace);
-							}
-						}
+							this.myNavBack("worklist");
+						}.bind(this)
 					});
-				},
+				}.bind(this),
 				error: function() {
 					MessageBox.show("Save Error", {
 						icon: "ERROR",
@@ -120,16 +95,7 @@ sap.ui.define([
 		},
 
 		onCancelPost: function() {
-			var oHistory = History.getInstance();
-			var sPreviousHash = oHistory.getPreviousHash();
-			if (sPreviousHash !== undefined) {
-				// The history contains a previous entry
-				history.go(-1);
-			} else {
-				// Otherwise we go backwards with a forward history
-				var bReplace = true;
-				this.getRouter().navTo("worklist", {}, bReplace);
-			}
+			this.myNavBack("worklist");
 		}
 	});
 
