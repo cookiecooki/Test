@@ -27,8 +27,8 @@ sap.ui.define([
 					icon: "WARNING",
 					title: "Are you sure to drop draft?",
 					actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
-					onClose: function(oEvent) {
-						if (oEvent === sap.m.MessageBox.Action.OK) {
+					onClose: function(oAction) {
+						if (oAction === sap.m.MessageBox.Action.OK) {
 							this.myNavBack("worklist");
 						}
 					}.bind(this)
