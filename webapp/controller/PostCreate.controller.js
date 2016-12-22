@@ -79,9 +79,7 @@ sap.ui.define([
 						icon: "SUCCESS",
 						title: "Post was created successfully",
 						actions: [sap.m.MessageBox.Action.OK],
-						onClose: function() {
-							this.myNavBack("worklist");
-						}.bind(this)
+						onClose: this.myNavBack.bind(this, "worklist")
 					});
 				}.bind(this),
 				error: function() {
