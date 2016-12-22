@@ -11,11 +11,11 @@
 				columnsL="1" columnsM="1" singleContainerFullSize="false" class="sapUiForceWidthAuto sapUiLargeMarginBeginEnd sapUiLargeMarginTop">
 				<f:content>
 					<Label text="{i18n>postNameLabel}"/>
-					<Input id="input_name" placeholder="{i18n>postNamePlaceholder}"/>
+					<Input id="input_name" placeholder="{i18n>postNamePlaceholder}" change="onChange"/>
 					<Label text="{i18n>postPriceLabel}"/>
-					<Input id="input_price" placeholder="{i18n>postPricePlaceholder}"/>
+					<Input id="input_price" placeholder="{i18n>postPricePlaceholder}" change="onChange"/>
 					<Label text="{i18n>postCategoryLabel}"/>
-					<Select id="select_category">
+					<Select id="select_category" change="onChange">
 						<core:Item key="category_bicycles" text="Bicycles"/>
 						<core:Item key="category_sports" text="Sports"/>
 						<core:Item key="category_multimedia" text="Multimedia"/>
