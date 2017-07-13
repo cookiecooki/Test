@@ -1,4 +1,4 @@
-Feature: Worklist - First Gherkin
+Feature: Bulletin Board - First Gherkin
 
   Background:
     Given I start my app
