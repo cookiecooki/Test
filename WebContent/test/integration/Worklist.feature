@@ -7,6 +7,6 @@ Feature: Worklist - First Gherkin
 	When on the worklist page: i look at the screen
 	Then on the worklist page: the title should display the total amount of items
 	
-  Scenario: Should see the table with all Posts
+  Scenario: Should be able to search for items
 	When on the worklist page: i search for Bike Rack
 	Then on the worklist page: the table has one item
