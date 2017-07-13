@@ -4,8 +4,10 @@ sap.ui.define([
 	'sap/ui/demo/bulletinboard/controller/BaseController',
 	'sap/ui/model/json/JSONModel',
 	'sap/ui/demo/bulletinboard/model/formatter',
-	'sap/ui/demo/bulletinboard/model/FlaggedType'
-], function (BaseController, JSONModel, formatter, FlaggedType) {
+	'sap/ui/demo/bulletinboard/model/FlaggedType',
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseController, JSONModel, formatter, FlaggedType, Filter, FilterOperator) {
 	"use strict";
 
 	return BaseController.extend("sap.ui.demo.bulletinboard.controller.Worklist", {
@@ -79,11 +81,42 @@ sap.ui.define([
 			}
 			this.getModel("worklistView").setProperty("/worklistTableTitle", sTitle);
 		},
-		
-		onPress: function(oEvent){
+
+		/**
+		 * Triggered by the SearchFields's 'search' event
+		 * @param {sap.ui.base.Event} oEvent SearchFields's search event
+		 * @public
+		 */
+		onFilterPosts: function (oEvent) {
+
+			// build filter array
+			var aFilter = [];
+			var sQuery = oEvent.getParameter("query");
+			if (sQuery) {
+				aFilter.push(new Filter("Title", FilterOperator.Contains, sQuery));
+			}
+
+			// filter binding
+			var oTable = this.getView().byId("table");
+			var oBinding = oTable.getBinding("items");
+			oBinding.filter(aFilter);
+		},
+
+		/**
+		 * Event handler when a table item gets pressed
+		 * @param {sap.ui.base.Event} oEvent the table selectionChange event
+		 * @public
+		 */
+		onPress: function (oEvent) {
 			this.getRouter().navTo("post", {
+				// The source is the list item that got pressed
 				postId: oEvent.getSource().getBindingContext().getProperty("PostID")
 			});
+
+		},
+		
+		onCreatePost: function(){
+			this.getRouter().navTo("postCreate");
 		},
 
 		/* =========================================================== */
@@ -92,7 +125,7 @@ sap.ui.define([
 
 		/**
 		 * Sets the item count on the worklist view header
-		 * @param {integer} iTotalItems the total number of items in the table
+		 * @param {int} iTotalItems the total number of items in the table
 		 * @private
 		 */
 		_updateListItemCount: function (iTotalItems) {

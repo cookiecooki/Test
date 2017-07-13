@@ -58,7 +58,7 @@
 				</ReferentialConstraint>
 			</Association>
 			<EntityContainer Name="BULLETINBOARD_ENTITIES" m:IsDefaultEntityContainer="true">
-				<EntitySet EntityType="BULLETINBOARD.Post" Name="Posts" sap:content-version="1" sap:creatable="false" sap:deletable="false"
+				<EntitySet EntityType="BULLETINBOARD.Post" Name="Posts" sap:content-version="1" sap:creatable="true" sap:deletable="false"
 					sap:pageable="false" sap:updatable="false" xmlns:sap="http://www.sap.com/Protocols/SAPData"/>
 				<EntitySet EntityType="BULLETINBOARD.Category" Name="Categories" sap:content-version="1" sap:creatable="false" sap:deletable="false"
 					sap:pageable="false" sap:updatable="false" xmlns:sap="http://www.sap.com/Protocols/SAPData"/>

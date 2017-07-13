@@ -1,10 +1,11 @@
 sap.ui.require(
 	[
 		"sap/ui/demo/bulletinboard/model/models",
+		"sap/m/MessageBox",
 		"sap/ui/thirdparty/sinon",
 		"sap/ui/thirdparty/sinon-qunit"
 	],
-	function (models) {
+	function (models, MessageBox) {
 		"use strict";
 
 		QUnit.module("createDeviceModel", {
@@ -59,4 +60,26 @@ sap.ui.require(
 			// Assert
 			assert.strictEqual(this.oDeviceModel.getDefaultBindingMode(), "OneWay", "Binding mode is correct");
 		});
+		
+		QUnit.module("Sinon test", {
+			beforeEach: function(){
+				
+			},
+			afterEach: function(){
+				
+			}
+		});
+		
+		QUnit.test("Should show warning message box when error code is even", function(assert){
+			this.stub(MessageBox, "show");
+			models.errorHandler(2);
+			assert.strictEqual(MessageBox.show.getCall(0).args[1].icon, "WARNING", "Message box type is correct");
+		});
+		
+		/*QUnit.test("Should show warning message box when error code is odd", function(assert){
+			var oSpy = this.stub(MessageBox, "show");
+			models.errorHandler(3);
+			//assert.strictEqual(MessageBox.show.getCall(0).args[1].icon, "ERROR", "Message box type is correct");
+			assert.ok(oSpy.calledWith(sinon.match.string, sinon.match({icon:"ERROR"})), "Message box type is correct");
+		});*/
 	});

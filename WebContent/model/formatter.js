@@ -1,6 +1,4 @@
-sap.ui.define([
-               'sap/ui/demo/bulletinboard/model/DateFormatter'
-               ], function (DateFormatter){
+sap.ui.define([], function () {
 	"use strict";
 
 	return {
@@ -17,10 +15,6 @@ sap.ui.define([
 			}
 
 			return parseFloat(sValue).toFixed(2);
-		},
-		
-		date: function(date){
-			return new DateFormatter({now: Date.now}).format(date);
 		},
 
 		/**
